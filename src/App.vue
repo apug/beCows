@@ -1,23 +1,34 @@
 <template>
-  <div id="app">
-    <div class="toolbar">
-      <button @click="edit = !!!edit">
-        <font-awesome-icon :icon="edit?'save':'edit'"></font-awesome-icon>
-      </button>
-      <button @click="is_thinking = !!!is_thinking">
-        <font-awesome-icon :icon="is_thinking?['fas','brain']:['far','comment']"></font-awesome-icon>
-      </button>
-      <button @click="sshot()">sshot</button>
+  <div id="app" class="container">
+    <div class="row">
+      <h1 class="col text-center">There's no why, only beCows.</h1>
     </div>
-    <div class="mainView" ref="mainView">
-      <textarea v-model="msg" v-if="edit"></textarea>
-      <div style = "white-space: pre-line"
-           class="bubble " :class="{'thought': is_thinking, 'speech': !is_thinking}" v-if="!edit">
-        {{ msg }}
+    <div class="mainView row justify-content-center" ref="mainView">
+      <div class="col">
+        <div style="white-space: pre-line"
+             class="bubble " :class="{'thought': is_thinking, 'speech': !is_thinking}">
+          <textarea class="form-control" v-model="msg" v-if="edit"></textarea>
+          <div v-else>{{ msg }}</div>
+        </div>
+        <div class="cow" :class="cowtype" ref="cow"></div>
       </div>
-      <div class="cow" :class="cowtype" ref="cow"></div>
     </div>
-    <a ref = "download" :href="output" download="cow.png" v-show="false" >aaa</a>
+    <div class="row justify-content-center">
+      <div class="btn-toolbar">
+
+        <button type="button" class="btn btn-primary m-1" @click="toggleEdit()">
+          <font-awesome-icon :icon="edit?'save':'edit'"></font-awesome-icon>
+        </button>
+
+        <button class="btn btn-primary m-1" @click="is_thinking = !!!is_thinking">
+          <font-awesome-icon :icon="is_thinking?['fas','brain']:['far','comment']"></font-awesome-icon>
+        </button>
+
+        <a class="btn btn-primary m-1" ref="download" :href="output" download="cow.png">
+          <font-awesome-icon icon="download"></font-awesome-icon>
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,16 +46,20 @@ export default {
     }
   },
   methods: {
-    sshot: function () {
-      let el = this.$refs.mainView;
-      const options = {
-        type: 'dataURL'
+    toggleEdit: function () {
+      this.edit = !this.edit;
+      if (!this.edit) {
+        let el = this.$refs.mainView;
+        const options = {
+          type: 'dataURL'
+        }
+        this.$html2canvas(el, options).then((out) => {
+          console.log(out)
+          this.output = out;
+        });
       }
-      this.$html2canvas(el, options).then((out) => {
-        console.log(out)
-        this.output = out;
-        this.$refs.download.click();
-      });
+    },
+    sshot: function () {
     }
   }
 
@@ -54,10 +69,8 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css?family=Coming+Soon');
 
-.toolbar {
-  margin: auto;
-  width: 360px;
-  background-color: #f9f9f9;
+* {
+  font-family: 'Coming Soon';
 }
 
 .mainView {
@@ -65,38 +78,10 @@ export default {
   background-image: url("~@/assets/cow1-bg.png");
   background-repeat: repeat-x;
   background-position: left bottom;
-  border: solid 1px #999;
-  width: 360px;
-  margin: auto;
-}
-
-textarea {
-  margin: auto;
-  width: 90%;
-  font-weight: bold;
-  font-size: 1.2em;
-  font-family: 'Coming Soon';
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 10px;
-  border: none;
-  min-height: 100px;
-}
-
-.msg {
-  margin: auto;
-  width: 90%;
-  font-weight: bold;
-  font-size: 1.2em;
-  font-family: 'Coming Soon';
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 10px;
 }
 
 .cow {
-  width: 100%;
-  height: 330px;
+  min-height: 330px;
 }
 
 .cow1 {
@@ -105,13 +90,12 @@ textarea {
   background-position: center bottom;
 }
 
-
 div.bubble {
   position: relative;
   width: 280px;
   text-align: center;
   line-height: 1.4em;
-  margin: 40px auto;
+  margin: 5px auto 40px auto;
   background-color: #fff;
   border: 8px solid #333;
   border-radius: 30px;
@@ -151,8 +135,8 @@ div.speech:after {
 
 div.thought:before,
 div.thought:after {
-  left: 290px;
-  bottom: -30px;
+  left: 120px;
+  bottom: -35px;
   width: 40px;
   height: 40px;
   background-color: #fff;
@@ -165,8 +149,8 @@ div.thought:after {
 div.thought:after {
   width: 20px;
   height: 20px;
-  left: 280px;
-  bottom: -40px;
+  left: 120px;
+  bottom: -50px;
   -webkit-border-radius: 18px;
   -moz-border-radius: 18px;
   border-radius: 18px;
