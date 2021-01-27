@@ -4,17 +4,20 @@
       <button @click="edit = !!!edit">
         <font-awesome-icon :icon="edit?'save':'edit'"></font-awesome-icon>
       </button>
+      <button @click="is_thinking = !!!is_thinking">
+        <font-awesome-icon :icon="is_thinking?['fas','brain']:['far','comment']"></font-awesome-icon>
+      </button>
       <button @click="sshot()">sshot</button>
     </div>
     <div class="mainView" ref="mainView">
       <textarea v-model="msg" v-if="edit"></textarea>
       <div style = "white-space: pre-line"
-           class="bubble thought" v-if="!edit">
+           class="bubble " :class="{'thought': is_thinking, 'speech': !is_thinking}" v-if="!edit">
         {{ msg }}
       </div>
       <div class="cow" :class="cowtype" ref="cow"></div>
     </div>
-    <img :src="output"/>
+    <a ref = "download" :href="output" download="cow.png" v-show="false" >aaa</a>
   </div>
 </template>
 
@@ -24,7 +27,8 @@ export default {
   name: 'App',
   data: function () {
     return {
-      output: false,
+      is_thinking: false,
+      output: 'ciao',
       cowtype: 'cow1',
       edit: false,
       msg: ''
@@ -38,6 +42,8 @@ export default {
       }
       this.$html2canvas(el, options).then((out) => {
         console.log(out)
+        this.output = out;
+        this.$refs.download.click();
       });
     }
   }
